@@ -1,46 +1,93 @@
-def reader():
-    f = open("D5_input.txt","r")
-    text = ""
-    with open("D5_input.txt","r") as my_file:
-        lines = my_file.read()
-    found = False
-    for line in lines.split('\n'):
-        if len(line) == 0:
-            found = True
-        if found:
-            text += line + '\n'
-    text = text.strip(' \n')
-    print(text)
-    return text
+from importFile import *
 
-class Crane():
+def readCommand(stack,command):
+    cmds = command.split(' ')
+    src = int(cmds[3])
+    dst = int(cmds[5])
+    num = int(cmds[1])
+
+    item = ''
+    for i in range(num):
+        item = stack[src].pop()
+        stack[dst].append(item)
+
+    return stack
+
+def readCommand2(stack,command):
+    cmds = command.split(' ')
+    src = int(cmds[3])
+    dst = int(cmds[5])
+    num = int(cmds[1])
+
+    item = ''
+    temp_list = []
+    for i in range(num):
+    #    print(stack[src])
+        t=''
+        if stack[src]:
+            t = stack[src].pop()
+        temp_list.append(t)
+        #print(temp_list)
+    #print(temp_list)
+    temp_list = temp_list[::-1]
+    #print(temp_list)
+    for a in temp_list:
+        stack[dst].append(a)
+
+    return stack
+
+def day5():
+    filename = "day5_input"
+    text = importFileAsTXT(f"C:/Users/Geri/Documents/AdventOfCode/resources/{filename}.txt")
+    text = text.split("\n")
+    #----------------------#
+    stacks = {1:[],2:[],3:[],4:[],5:[],
+              6:[],7:[],8:[],9:[],}
+    #[B] [T] [M] [B] [J] [C] [T] [G] [N]
+    #01234567890123456789012345678901234
+    # 1   5   9  13  17  21  25  29
+    # difference: 4 -> if (x-1)%4==0 then CHAR
     
-    stacks = [['B','G','S','C'],['T','M','W','H','J','N','V','G'],['M','Q','S'],['B','S','L','T','W','N','M'],['J','Z','F','T','V','G','W','P'],['C','T','B','G','Q','H','S',],['T','J','P','B','W',],['G','D','C','Z','F','T','Q','M',],['N','S','H','B','P','F',]]
-
-    commandsList=""
-
-    def getCL(self,CL):
-        self.commandsList = CL
+    #------------------< POPULATE DICT >------------------#
     
-    def readCommand(self,command):
-        cmds = command.split(' ')
-        src = int(cmds[3])
-        dst = int(cmds[5])
-        rng = int(cmds[1])
-        print(f'Move {rng} pcs from pile {src} to pile {dst}')
-        print(self.stacks[src])
-        print(self.stacks[dst])
-        item = ''
-        for i in range(rng):
-            item = self.stacks[src].pop()
-            self.stacks[dst].append(item)
-        print(self.stacks[src])
-        print(self.stacks[dst])         
+    i=0
+    line = text[i]
+    while line[:4] != '':
+        for a in range(len(line)):
+            if (a-1)%4==0 and line[a] != " " and not line[a].isnumeric():
+                ind = (a-1)/4 + 1
+                stacks[ind].append(line[a])
+        i+=1
+        line = text[i]
 
-        
-crane01 = Crane()
-crane01.getCL(reader())
-crane01.readCommand('move 2 from 4 to 2')
+    for k,v in stacks.items():
+        v = v.reverse()
+    print(stacks)
+    stacks20 = dict()
+    stacks20 = stacks.copy()
+    print(stacks20)
+    #-----------< COMMANDS >-------------#
+
+    for line in text[i+1:-1]:
+        stacks = readCommand(stacks,line)
+
+    #print(stacks)
+    last_crates = ''
+    for k,v in stacks.items():
+        last_crates += v[-1]
+    print("FIRST TASK:",last_crates)
+    #---------------------------#
+    print(stacks20)
+    for line in text[i+1:-1]:
+        stacks20 = readCommand2(stacks20,line)
+    last_crates = ''
+    for k,v in stacks20.items():
+        last_crates += v[-1]
+    print("SECOND TASK:",last_crates)
+
+
+if __name__ == "__main__":
+    day5()
 
 # sanitize code
 # separate reading and popping
