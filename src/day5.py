@@ -1,4 +1,5 @@
 from importFile import *
+import time
 
 def readCommand(stack,command):
     cmds = command.split(' ')
@@ -18,23 +19,29 @@ def readCommand2(stack,command):
     src = int(cmds[3])
     dst = int(cmds[5])
     num = int(cmds[1])
-
+    if len(stack[src]) < num:
+        print("NOT ENOUGH")
     item = ''
     temp_list = []
+    #print("NUM:",num)
+    #print("SRC:",stack[src])
     for i in range(num):
-    #    print(stack[src])
-        t=''
-        if stack[src]:
-            t = stack[src].pop()
+        t = stack[src].pop()
         temp_list.append(t)
-        #print(temp_list)
-    #print(temp_list)
+    #print("TEMPLIST:",temp_list)
     temp_list = temp_list[::-1]
-    #print(temp_list)
-    for a in temp_list:
-        stack[dst].append(a)
+    #print("TEMPLIST REVERSED:",temp_list)
+    for a in range(num):
+        stack[dst].append(temp_list[a])
 
     return stack
+
+def visualise(stack):
+    for k,v in stack.items():
+        print(k,v)
+    time.sleep(1.5)
+    print('\n'*100)
+
 
 def day5():
     filename = "day5_input"
@@ -42,6 +49,8 @@ def day5():
     text = text.split("\n")
     #----------------------#
     stacks = {1:[],2:[],3:[],4:[],5:[],
+              6:[],7:[],8:[],9:[],}
+    stacks2 = {1:[],2:[],3:[],4:[],5:[],
               6:[],7:[],8:[],9:[],}
     #[B] [T] [M] [B] [J] [C] [T] [G] [N]
     #01234567890123456789012345678901234
@@ -57,31 +66,39 @@ def day5():
             if (a-1)%4==0 and line[a] != " " and not line[a].isnumeric():
                 ind = (a-1)/4 + 1
                 stacks[ind].append(line[a])
+                stacks2[ind].append(line[a])
         i+=1
         line = text[i]
 
     for k,v in stacks.items():
         v = v.reverse()
+    for k,v in stacks2.items():
+        v = v.reverse()
+    print("STACKS1")
     print(stacks)
-    stacks20 = dict()
-    stacks20 = stacks.copy()
-    print(stacks20)
+    print("STACKS2")
+    print(stacks2)
     #-----------< COMMANDS >-------------#
 
     for line in text[i+1:-1]:
         stacks = readCommand(stacks,line)
+        
 
     #print(stacks)
     last_crates = ''
     for k,v in stacks.items():
         last_crates += v[-1]
     print("FIRST TASK:",last_crates)
-    #---------------------------#
-    print(stacks20)
+    #-------------< SECOND TASK >--------------#
+
+    #print(stacks20)
     for line in text[i+1:-1]:
-        stacks20 = readCommand2(stacks20,line)
+        stacks2 = readCommand2(stacks2,line)
+        #visualise(stacks2)
+
     last_crates = ''
-    for k,v in stacks20.items():
+    for k,v in stacks2.items():
+        #print(v[-1])
         last_crates += v[-1]
     print("SECOND TASK:",last_crates)
 
