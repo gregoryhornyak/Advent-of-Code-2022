@@ -1,5 +1,11 @@
 from importFile import *
 
+def compareCoord(cl1,cl2):
+    if cl1.x == cl2.x and cl1.y == cl2.y and cl1.z == cl2.z: 
+        #print("SAME")
+        return True
+    return False
+
 class Coordinate:
     def __init__(self,x,y,z):
         self.x = x
@@ -24,32 +30,36 @@ class Cube:
         self.west = Coordinate(self.coords.x-0.5,self.coords.y,self.coords.z)
         self.top = Coordinate(self.coords.x,self.coords.y,self.coords.z+0.5)
         self.bot = Coordinate(self.coords.x,self.coords.y,self.coords.z-0.5)
-
-def compareCoord(cl1,cl2):
-    if cl1.coords.x == cl2.coords.x and cl1.coords.y == cl2.coords.y and cl1.coords.z == cl2.coords.z: return True
+        self.side_coords = [self.north,self.south,self.east,self.west,self.top,self.bot]
 
 def day18():
     filename = "day18_input"
     text = importFileAsTXT(f"C:/Users/Geri/Documents/AdventOfCode/resources/{filename}.txt")
     text = text.split("\n")
     list_of_cubes = []
+
     for line in text:
         coords = list(map(int,line.split(",")))
         list_of_cubes.append(Cube(coords[0],coords[1],coords[2]))
     #print(Cube.num_of_cubes)
     surface = 0
+    _6sides = 0
+    diff = False
     for cube in list_of_cubes:
         for comp_cube in list_of_cubes:
-            if cube.id == comp_cube.id: break
-            if compareCoord(cube.north,comp_cube.north): cube.surfaces-=1
-            if cube.south == comp_cube.south: cube.surfaces-=1
-            if cube.west == comp_cube.west: cube.surfaces-=1
-            if cube.east == comp_cube.east: cube.surfaces-=1
-            if cube.top == comp_cube.top: cube.surfaces-=1
-            if cube.bot == comp_cube.bot: cube.surfaces-=1
-        surface += cube.surfaces
-    print(surface)
-    
+            if cube.id != comp_cube.id:
+                diff = True
+                for side in cube.side_coords:
+                    for side_comp in comp_cube.side_coords:
+                        if compareCoord(side,side_comp):
+                            cube.surfaces-=1
+        if diff:
+            surface += cube.surfaces
+        diff = False
+
+            
+    print("FIRST TASK:",surface)
+
 
 
 if __name__ == "__main__":
